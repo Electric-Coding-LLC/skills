@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clarity"
+  short_description: "Check prompt vagueness and logic risk"
+  default_prompt: "Evaluate this prompt for vagueness and poor-result risk, then ask the most important clarifying questions."

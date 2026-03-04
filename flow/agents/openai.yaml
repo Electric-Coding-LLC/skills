@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flow"
+  short_description: "Run chunk->dev->slop->review->auto-yeet"
+  default_prompt: "Use $flow to run the full delivery chain: $chunk, $dev, implementation, $slop, $review, then automatically run $yeet when review is clean."
