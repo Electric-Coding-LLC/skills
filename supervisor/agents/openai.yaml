@@ -1,0 +1,4 @@
+interface:
+  display_name: "Supervisor"
+  short_description: "Run a plan through fresh subagents one step at a time"
+  default_prompt: "Use $supervisor to execute this plan sequentially with a fresh subagent for each step, keeping handoffs compact and context boundaries explicit."

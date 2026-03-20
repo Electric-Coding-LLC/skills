@@ -23,13 +23,20 @@ Identify why a prompt may produce poor results and what must be clarified.
 
 ## Workflow
 
-1. Classify prompt quality quickly.
+1. Classify the prompt type first.
+- Use one of:
+  - `coding`
+  - `writing`
+  - `analysis`
+  - `automation`
+
+2. Classify prompt quality quickly.
 - Use three states:
   - `ready`: specific enough to run with low risk
   - `repairable`: usable after clarifications
   - `blocked`: too vague or contradictory to run safely
 
-2. Run an ambiguity scan.
+3. Run an ambiguity scan.
 - Use the rubric in `references/prompt-quality-rubric.md`.
 - Check for weak or missing elements:
   - Objective
@@ -38,17 +45,22 @@ Identify why a prompt may produce poor results and what must be clarified.
   - Constraints and boundaries
   - Output contract
   - Quality bar
+- For `coding` prompts, also check:
+  - Repo or code context
+  - Allowed tools or environment constraints
+  - Verification commands
+  - Reporting format
 
-3. Explain likely failure modes.
+4. Explain likely failure modes.
 - For each major gap, state the likely output problem.
 - Keep findings concrete and tied to quality impact.
 
-4. Ask targeted clarifying questions.
+5. Ask targeted clarifying questions.
 - Ask only questions that materially change output quality.
 - Prefer 3 to 5 questions maximum in the first pass.
 - Skip questions when state is `ready`.
 
-5. Provide minimal fix hints.
+6. Provide minimal fix hints.
 - Provide concise guidance on what to add.
 - Do not provide a full rewritten prompt unless the user explicitly asks.
 
@@ -68,7 +80,7 @@ Return results in this order:
 
 1. `Prompt quality verdict`
 - Classify as `ready`, `repairable`, or `blocked`.
-- Include one-sentence rationale.
+- Include the prompt type and one-sentence rationale.
 
 2. `Vagueness and risk findings`
 - List the top gaps (max 5).

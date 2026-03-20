@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design"
+  short_description: "Blunt UI critique and visual direction for screens, mockups, and UI code."
+  default_prompt: "Use $design to critique this UI bluntly, propose 3 distinct visual directions, recommend the strongest one, and give a concrete edit list."

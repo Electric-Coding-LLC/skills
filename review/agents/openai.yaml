@@ -1,4 +1,4 @@
 interface:
   display_name: "Review"
-  short_description: "Pre-yeet gate: code, security, and style checks."
-  default_prompt: "Use $review to assess current changes for code, security, and style issues before running $yeet."
+  short_description: "Repo-aware pre-yeet code, security, and style review."
+  default_prompt: "Use $review to inspect the current diff, discover repo-native verification commands, and assess code, security, and style issues before $yeet."
