@@ -42,6 +42,24 @@ Total score guidance:
 - Check for instructions that reduce hallucination or drift when relevant.
 - Add a risk note if factual reliability requirements are absent.
 
+## Coding Prompt Checks
+
+When the prompt is for implementation work, also verify:
+
+1. Repo context
+- Names the repo area, files, modules, or entry points to inspect.
+
+2. Execution environment
+- States relevant tool, permission, runtime, or sandbox constraints.
+
+3. Verification
+- Specifies exact tests, linters, or checks to run.
+
+4. Reporting contract
+- States what the agent should return: changed files, checks run, blockers, risks, or follow-ups.
+
+If these are missing, do not mark a coding prompt `ready` unless the task is trivial.
+
 ## High-Leverage Clarifying Questions
 
 Ask only questions that materially change the result.

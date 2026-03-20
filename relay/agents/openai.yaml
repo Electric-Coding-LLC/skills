@@ -1,0 +1,4 @@
+interface:
+  display_name: "Relay"
+  short_description: "Create a minimal done/next handoff seed"
+  default_prompt: "Use $relay to state what was done, state what is next, and produce a minimal seed to paste into a fresh Codex context."

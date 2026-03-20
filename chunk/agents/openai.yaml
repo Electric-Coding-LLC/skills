@@ -1,4 +1,4 @@
 interface:
   display_name: "Chunk"
-  short_description: "Pick the next moderate context-safe slice"
-  default_prompt: "Use $chunk to identify the next moderate, self-contained implementation chunk that fits context limits and can be completed end-to-end."
+  short_description: "Pick the next testable, bounded implementation slice"
+  default_prompt: "Use $chunk to identify the next implementation chunk with a bounded verification surface that can be completed end-to-end."

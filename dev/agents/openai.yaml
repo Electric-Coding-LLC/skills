@@ -1,4 +1,0 @@
-interface:
-  display_name: "Dev"
-  short_description: "Create implementation prompts from predefined chunks"
-  default_prompt: "Use $dev to produce an implementation-ready coding prompt for the predetermined chunk of work, including exact scope, constraints, acceptance criteria, and verification commands."

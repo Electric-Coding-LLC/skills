@@ -14,6 +14,7 @@ Find and remove code that was added to unblock delivery but now adds complexity,
 1. Define scope.
 - Review the exact files, diff, or module boundaries first.
 - Prefer changed code plus immediate call sites over full-repo scanning.
+- If the diff-local scan shows no meaningful slop candidates, say so and stop instead of broadening scope automatically.
 
 2. Run a slop scan across four categories.
 - `fallback slop`: silent defaults, catch-all return values, error swallowing, or secondary code paths with no current business need.

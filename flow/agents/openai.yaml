@@ -1,4 +1,4 @@
 interface:
   display_name: "Flow"
-  short_description: "Run chunk->dev->slop->review->auto-yeet"
-  default_prompt: "Use $flow to run the full delivery chain: $chunk, $dev, implementation, $slop, $review, then automatically run $yeet when review is clean."
+  short_description: "Autonomous delivery flow with plan tracking"
+  default_prompt: "Use $flow to take this work from scoped implementation through $slop, $review, $yeet, and $yoink automatically, and keep any existing repo plan doc or checklist updated as progress changes. Treat invocation of $flow as authorization to open, merge, and clean up the PR once review and CI gates are satisfied."
