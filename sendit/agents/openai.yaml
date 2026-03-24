@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sendit"
+  short_description: "Open, merge, and clean up a PR in one pass."
+  default_prompt: "Use $sendit to stage, commit, push, open the PR, wait for checks, merge it safely, and clean up branches without stopping after PR creation."

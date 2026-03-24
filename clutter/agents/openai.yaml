@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clutter"
+  short_description: "Find dead weight and stale residue"
+  default_prompt: "Use $clutter to find dead files, unused code, stale docs, and other low-value residue in this scope."

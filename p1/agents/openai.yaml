@@ -1,0 +1,4 @@
+interface:
+  display_name: "P1"
+  short_description: "Pick the one repo-level issue that matters most"
+  default_prompt: "Use $p1 to identify the single most important repo-level issue to work on next, favoring serious product gaps before larger improvement opportunities."
