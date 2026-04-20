@@ -1,0 +1,4 @@
+interface:
+  display_name: "Superflow"
+  short_description: "Supervised release flow from planning through merged PR"
+  default_prompt: "Use $superflow to gather the current release or project goal, build or update the execmap, handle any UI design and wireframes before implementation, complete the mapped work under $supervisor, run $slop and then $review with fixes, and finish with $sendit. Leave release or publish scripts for me to run manually."
