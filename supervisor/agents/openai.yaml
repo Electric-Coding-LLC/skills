@@ -1,4 +1,4 @@
 interface:
   display_name: "Supervisor"
-  short_description: "Run a plan through fresh subagents one step at a time"
-  default_prompt: "Use $supervisor to execute this plan sequentially with a fresh subagent for each step, keeping handoffs compact and context boundaries explicit."
+  short_description: "Lead longer work with scoped delegation"
+  default_prompt: "Use $supervisor to lead this goal from plan to completion, delegating bounded work to fresh subagents when that improves focus or preserves context, while keeping review, integration, and git decisions in the main thread."

@@ -116,6 +116,6 @@ When `$flow` completes or pauses, report:
 ## Example Triggers
 
 - "Use `$flow` to ship the next chunk end-to-end."
-- "Run `$flow` for chunk selection, implementation, cleanup, review, and PR creation."
+- "Run `$flow` for chunk selection, implementation, cleanup, review, and PR finalization."
 - "Take this from scoped work to merged PR with `$flow`."
 - "Use `$flow` to implement this, open the PR, then merge and clean up once checks pass."

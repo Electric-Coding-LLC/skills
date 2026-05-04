@@ -1,0 +1,4 @@
+interface:
+  display_name: "Debug"
+  short_description: "Root-cause bugs without fallback hacks"
+  default_prompt: "Use $debug to reproduce or constrain the failure, trace the real root cause, make the narrowest correct fix without adding fallback hacks, and verify the original symptom."
