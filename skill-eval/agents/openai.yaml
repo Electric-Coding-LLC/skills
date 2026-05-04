@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Eval"
+  short_description: "Audit skills for usefulness and overhead"
+  default_prompt: "Use $skill-eval to review the relevant skills for trigger quality, overlap, over-constraining language, metadata drift, and repo-vs-installed sync, then recommend keep, revise, merge, remove, or defer."

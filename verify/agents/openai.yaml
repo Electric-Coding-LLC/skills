@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify"
+  short_description: "Choose the cheapest reliable proof"
+  default_prompt: "Use $verify to state the claim, choose the cheapest reliable proof that matches it, run the proof, and report what passed, failed, was blocked, or remains unproven."
