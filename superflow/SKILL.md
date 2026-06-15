@@ -1,6 +1,6 @@
 ---
 name: superflow
-description: Lead a roadmap version or project slice from theme discovery through execmap planning, optional UI design and wireframes, implementation, cleanup, final review, and PR merge via `sendit`. Use when the user wants one supervised flow to turn a current goal into merged code without running release or publish scripts.
+description: Lead a roadmap version or project slice from theme discovery through execmap planning, optional UI design, implementation, cleanup, final review, and PR merge via `sendit`. Use when the user wants one supervised flow to turn a current goal into merged code without running release or publish scripts.
 ---
 
 # Superflow
@@ -15,7 +15,7 @@ Take a current roadmap version, project, or theme from "what are we trying to sh
 - run the work under `$supervisor`
 - front-load planning with `$execmap`
 - keep roadmap, `PLAN.md`, `EXECMAP.md`, and other progress artifacts synced as work advances
-- add UI design and ASCII wireframes when screens are part of the scope
+- add UI design direction when screens are part of the scope and wireframes only when they materially clarify execution
 - complete implementation
 - run `$slop` and fix blocking findings
 - run `$review` and fix blocking findings
@@ -42,7 +42,7 @@ Default definition of done under `$superflow`:
 
 1. The current goal is clarified enough to execute safely.
 2. An `execmap` exists or has been updated to match the real work.
-3. Any relevant UI direction and wireframes exist before UI implementation starts.
+3. Any relevant UI direction exists before UI implementation starts, with wireframes added only when needed to clarify layout, flow, or states.
 4. The mapped implementation is complete for the selected slice.
 5. Repo progress artifacts stay truthful at stage boundaries instead of being left for wrap-up.
 6. `$slop` findings are resolved or intentionally kept with rationale.
@@ -84,11 +84,11 @@ If the user sets a narrower finish line, follow that instead.
 
 4. Run the UI track when screens exist.
 - Decide whether the scoped work includes screens, views, major UI states, or a design-system seam.
-- If yes, use `$design` before UI implementation to define or sharpen the visual direction.
+- If yes, use `$design` before UI implementation when the visual direction is ambiguous, high-impact, or part of the user's request.
 - If an existing design system exists, align with it instead of inventing a parallel one.
 - Define concise text descriptions for each screen or view that matters to the slice.
-- Use `$wirefmt` to create ASCII wireframe artifacts for those screens or views.
-- Store design decisions and wireframes with the planning artifacts or the most relevant repo-local docs.
+- Use `$wirefmt` to create ASCII wireframe artifacts only when layout, interaction flow, or state coverage would otherwise be unclear.
+- Store durable design decisions, and any wireframes created, with the planning artifacts or the most relevant repo-local docs.
 
 5. Execute the mapped implementation.
 - Follow the next unchecked `execmap` item.
@@ -145,7 +145,7 @@ Update it at meaningful stage boundaries:
 
 - after context intake
 - after `execmap` creation or revision
-- after UI design/wireframe work
+- after UI design work or wireframe work, when either changes tracker truth
 - after implementation milestones
 - after `slop` and `review`
 - after PR creation
@@ -221,6 +221,7 @@ If it completes, clearly separate merged code delivery from any manual release o
   into a versioned `EXECMAP`.
 - Do not invent UI screens just to satisfy the UI track; only run it when screens or views are actually part of scope.
 - Do not let design work drift into abstract product philosophy. Keep it screen-specific and execution-oriented.
+- Do not create wireframes for narrow UI fixes where existing patterns and layout are already clear.
 - Do not hand-draw ASCII wireframes when `$wirefmt` should be used.
 - Do not let step docs or status notes become a second source of truth over `EXECMAP.md`.
 - Do not keep stale progress in docs; update the real tracker as work advances.

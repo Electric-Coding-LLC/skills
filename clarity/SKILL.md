@@ -29,6 +29,9 @@ Identify why a prompt may produce poor results and what must be clarified.
   - `writing`
   - `analysis`
   - `automation`
+  - `design`
+  - `workflow`
+  - `other`
 
 2. Classify prompt quality quickly.
 - Use three states:

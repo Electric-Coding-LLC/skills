@@ -1,0 +1,4 @@
+interface:
+  display_name: "Housekeeping"
+  short_description: "Repo truth and maintenance tidy-up"
+  default_prompt: "Use $housekeeping to sync stale repo status docs, fix obvious command/path drift, and handle low-risk maintenance cleanup without changing product behavior."

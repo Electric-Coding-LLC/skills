@@ -1,13 +1,13 @@
 ---
 name: sendit
-description: Open and finalize a GitHub pull request in one flow using GitHub CLI. Use when the user explicitly wants to stage, commit, push, open the PR, wait for checks, merge it safely, and clean up branches without stopping after PR creation.
+description: Open and finalize a GitHub pull request in one flow using GitHub CLI. Use when the user explicitly wants to stage the intended changes, commit, push, open the PR, wait for checks, merge it safely, and clean up branches without stopping after PR creation.
 ---
 
 # Sendit
 
 ## Goal
 
-Stage, commit, push, open a PR, wait for checks, merge, and clean up — all in one uninterrupted flow. Treat invocation of `/sendit` as authorization to open the PR and continue through actual merge completion once the merge gates are satisfied.
+Stage the intended changes, commit, push, open a PR, wait for checks, merge, and clean up -- all in one uninterrupted flow. Treat invocation of `/sendit` as authorization to open the PR and continue through actual merge completion once the merge gates are satisfied.
 
 ## Prerequisites
 
@@ -27,9 +27,19 @@ Stage, commit, push, open a PR, wait for checks, merge, and clean up — all in 
 1. Prepare and open the PR.
 - If on main/master/default, create a branch: `git checkout -b "claude/{description}"`
 - Otherwise stay on the current branch.
-- Confirm status, then stage everything:
+- Before staging, run a progress sync on existing planning artifacts:
+  - Inspect `PLAN.md`, `plans/**/EXECMAP.md`, roadmap docs, and task checklists that clearly belong to the current work.
+  - Update mechanically obvious progress, status, and exit-criteria truth now so those docs are included in the delivery commit.
+  - If an `execmap` helper is available, prefer it for status/shape checks when it reduces manual work.
+  - Do not create new planning artifacts unless the user asked for them or the repo's existing process requires them.
+  - If the correct update depends on an unresolved product, release, or status decision, stop and report the blocker before committing.
+- Inspect and classify the working tree before staging:
   - `git status -sb`
-  - `git add -A`
+  - `git diff --name-only`
+  - `git diff --cached --name-only`
+- Stage only files that belong to the requested work.
+- If unrelated or ambiguous changes are present, leave them unstaged and report them; ask only when the intended stage set cannot be determined safely.
+- Use `git add -A` only when the user explicitly asks to include all working-tree changes or the inspected diff clearly contains only the intended work.
 - Commit tersely with the description:
   - `git commit -m "{description}"`
 - Run checks if they have not already been run. If checks fail due to missing deps/tools, install dependencies and rerun once.
@@ -40,6 +50,7 @@ Stage, commit, push, open a PR, wait for checks, merge, and clean up — all in 
   - `GH_PROMPT_DISABLED=1 GIT_TERMINAL_PROMPT=0 gh pr create --draft --fill --head $(git branch --show-current)`
 - Write the PR description to a temp file with real newlines and update the PR body from that file.
 - PR description must cover the issue, user impact, root cause, fix, and validation performed.
+- PR description must include any planning/progress docs updated before staging, or say no planning sync was needed.
 
 2. Resolve the target PR state.
 - Use the current branch PR unless the user explicitly names a different PR:
@@ -79,12 +90,14 @@ Stage, commit, push, open a PR, wait for checks, merge, and clean up — all in 
 - If uncommitted local changes block checkout or cleanup, stop and ask before stashing or changing branches.
 - If `gh pr merge --delete-branch` already removed the remote branch, treat that as success and continue local cleanup.
 - If the user explicitly says to keep the PR in draft, stop after PR creation instead of marking it ready.
+- Do not leave mechanically obvious `PLAN.md`, `EXECMAP.md`, roadmap, or checklist updates for a follow-up status-only commit.
 
 ## Output Contract
 
 - Report:
   - Branch name, commit, PR number, and PR URL.
   - Whether the PR had to be marked ready for review.
+  - Planning/progress docs updated before staging, or `no sync needed`.
   - Check outcome, including notable failing check names if blocked.
   - Merge strategy used.
   - Whether auto-merge was enabled as an intermediate step.

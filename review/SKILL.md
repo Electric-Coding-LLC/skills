@@ -1,13 +1,13 @@
 ---
 name: review
-description: "Run a pre-Yeet quality gate on local code changes. Use when a user asks for a review, readiness check, or pre-PR check after making changes and before running Yeet. Perform three passes: (1) code review for bugs/regressions/tests, (2) security review for common vulnerabilities and secret exposure, and (3) style review for lint/format/convention drift. Return blocking issues, non-blocking suggestions, and an explicit ready-for-Yeet verdict."
+description: "Run a pre-Sendit quality gate on local code changes. Use when a user asks for a review, readiness check, or pre-PR check after making changes and before running Sendit. Perform three passes: (1) code review for bugs/regressions/tests, (2) security review for common vulnerabilities and secret exposure, and (3) style review for lint/format/convention drift. Return blocking issues, non-blocking suggestions, and an explicit ready-for-Sendit verdict."
 ---
 
 # Review
 
 ## Goal
 
-Assess working-tree changes before push/PR and decide whether it is safe to proceed to `$yeet`.
+Assess working-tree changes before push/PR and decide whether it is safe to proceed to `$sendit`.
 Focus on signal, not volume: identify concrete risks, explain impact, and avoid speculative noise.
 
 ## Workflow
@@ -48,17 +48,17 @@ Focus on signal, not volume: identify concrete risks, explain impact, and avoid 
 
 6. Produce a decision and handoff.
 - Classify each issue as:
-  - `blocking`: must be fixed before `$yeet`
+  - `blocking`: must be fixed before `$sendit`
   - `non-blocking`: improvement suggestion
 - Any failed, skipped, unavailable, or weaker-than-required verification command keeps the review in `blocking`.
 - End with explicit verdict:
-  - `Ready for Yeet: yes`
-  - `Ready for Yeet: no`
-- If ready, include the handoff line: `Proceed with $yeet.`
+  - `Ready for Sendit: yes`
+  - `Ready for Sendit: no`
+- If ready, include the handoff line: `Proceed with $sendit.`
 
 ## Guardrails
 
-- Do not commit, push, or run `$yeet` as part of this skill unless the user explicitly asks.
+- Do not commit, push, or run `$sendit` as part of this skill unless the user explicitly asks.
 - Do not hide uncertainty. If the check could not be run, say exactly what was skipped.
 - Distinguish `unsupported in this repo`, `not available in environment`, and `skipped` because those imply different residual risks.
 - Do not mark the diff ready when required repo-native checks were skipped, replaced with lighter commands, or left unavailable without a documented no-local-equivalent reason.
@@ -72,6 +72,6 @@ Return results in this order:
 1. `Blocking issues`
 2. `Non-blocking suggestions`
 3. `Checks run` (exact commands and outcomes for tests/lint/typecheck/build/security checks, plus anything unsupported, unavailable, or skipped with reason)
-4. `Ready for Yeet: yes|no`
+4. `Ready for Sendit: yes|no`
 
-When no blocking issues remain, include: `Proceed with $yeet.`
+When no blocking issues remain, include: `Proceed with $sendit.`

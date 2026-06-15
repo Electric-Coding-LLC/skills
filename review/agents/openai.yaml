@@ -1,4 +1,4 @@
 interface:
   display_name: "Review"
-  short_description: "Repo-aware pre-yeet code, security, and style review."
-  default_prompt: "Use $review to inspect the current diff, discover repo-native verification commands, and assess code, security, and style issues before $yeet."
+  short_description: "Repo-aware pre-Sendit review."
+  default_prompt: "Use $review to inspect the current diff, discover repo-native verification commands, and assess code, security, and style issues before $sendit."
