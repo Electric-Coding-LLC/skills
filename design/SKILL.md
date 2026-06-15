@@ -41,13 +41,15 @@ Remove weak or generic patterns before adding more.
   - emphasis and focal points
   - consistency of visual direction
 
-4. Propose 3 distinct directions.
-- Each direction should feel meaningfully different.
+4. Propose directions at the right scale.
+- For broad, early, or ambiguous UI work, propose 3 distinct directions.
+- For focused critique or narrow UI fixes, give the strongest direction directly and skip alternatives.
+- When giving alternatives, each direction should feel meaningfully different.
 - Vary the composition, type posture, density, contrast, or emphasis strategy.
-- Do not offer three minor variations of the same safe SaaS pattern.
+- Do not offer minor variations of the same safe SaaS pattern.
 
-5. Recommend one direction.
-- Pick the strongest option.
+5. Recommend the direction.
+- Pick the strongest option when multiple directions were considered.
 - Explain why it best fits the screen's job and audience.
 
 6. Translate the direction into edits.
@@ -62,9 +64,10 @@ Return results in this order:
 - 2 to 5 bullets.
 - Name the biggest visual problems directly.
 
-2. `3 design directions`
-- One short paragraph or tight bullet set per direction.
-- Give each direction a clear label.
+2. `Design direction`
+- For broad work, include 3 labeled directions.
+- For narrow work, include one recommended direction.
+- Keep each direction to one short paragraph or tight bullet set.
 
 3. `Recommended direction`
 - Name the winner and why.
@@ -75,6 +78,7 @@ Return results in this order:
 ## Guardrails
 
 - Avoid generic SaaS defaults and "AI slop" design language.
+- Do not force three directions when the request is already narrow.
 - Do not turn the response into a giant framework, rubric, or multi-step system.
 - Keep the advice visual and practical.
 - Prefer strong hierarchy and restraint over novelty for its own sake.
