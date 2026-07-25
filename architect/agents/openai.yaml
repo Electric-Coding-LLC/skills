@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architect"
+  short_description: "Architecture review and repo guidance"
+  default_prompt: "Use $architect to review this repository architecture, identify drift or boundary issues, and propose concise AGENTS.md guidance."

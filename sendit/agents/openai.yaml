@@ -1,4 +1,4 @@
 interface:
   display_name: "Sendit"
   short_description: "Open, merge, and clean up a PR in one pass."
-  default_prompt: "Use $sendit to sync existing planning/progress docs when mechanically obvious, stage the intended changes, commit, push, open the PR, wait for checks, merge it safely, and clean up branches without stopping after PR creation."
+  default_prompt: "Use $sendit to sync existing planning/progress docs when mechanically obvious so implementation, verification, and ready-to-land status are included in the same delivery commit as the code, stage the intended changes, commit, push, open the PR, wait for checks, merge it safely, and clean up branches without stopping after PR creation. Report final GitHub delivery state without creating a second docs-only PR."

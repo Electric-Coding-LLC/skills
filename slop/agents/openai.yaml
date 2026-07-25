@@ -1,4 +1,4 @@
 interface:
   display_name: "Slop"
-  short_description: "Find fallback hacks and stale guards"
-  default_prompt: "Use $slop to audit this code for unnecessary fallbacks, stale compatibility logic, and unblocker hacks."
+  short_description: "Focused fallback and stale-guard audit"
+  default_prompt: "Use $slop for a focused cleanup-only audit of unnecessary fallbacks, stale compatibility logic, redundant guards, and unblocker hacks outside the normal $review gate."

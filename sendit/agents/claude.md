@@ -29,7 +29,8 @@ Stage the intended changes, commit, push, open a PR, wait for checks, merge, and
 - Otherwise stay on the current branch.
 - Before staging, run a progress sync on existing planning artifacts:
   - Inspect `PLAN.md`, `plans/**/EXECMAP.md`, roadmap docs, and task checklists that clearly belong to the current work.
-  - Update mechanically obvious progress, status, and exit-criteria truth now so those docs are included in the delivery commit.
+  - Treat this as the delivery PR's final repo-doc sync point.
+  - Update mechanically obvious progress, status, exit-criteria, verification, and ready-to-land truth now so those docs are included in the same delivery commit as the code.
   - If an `execmap` helper is available, prefer it for status/shape checks when it reduces manual work.
   - Do not create new planning artifacts unless the user asked for them or the repo's existing process requires them.
   - If the correct update depends on an unresolved product, release, or status decision, stop and report the blocker before committing.
@@ -77,6 +78,7 @@ Stage the intended changes, commit, push, open a PR, wait for checks, merge, and
 - Switch to the default branch and fast-forward:
   - `git switch <default-branch>`
   - `git pull --ff-only`
+- Do not modify repo-local planning artifacts after merge just to record that the PR merged; GitHub and the final report are the delivery-state source of truth.
 - Delete the local head branch if it still exists:
   - `git branch -d <head-branch>`
 - Prune stale remote refs:
@@ -91,6 +93,7 @@ Stage the intended changes, commit, push, open a PR, wait for checks, merge, and
 - If `gh pr merge --delete-branch` already removed the remote branch, treat that as success and continue local cleanup.
 - If the user explicitly says to keep the PR in draft, stop after PR creation instead of marking it ready.
 - Do not leave mechanically obvious `PLAN.md`, `EXECMAP.md`, roadmap, or checklist updates for a follow-up status-only commit.
+- Do not create a second PR solely to sync final docs after merge.
 
 ## Output Contract
 

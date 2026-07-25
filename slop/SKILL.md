@@ -1,6 +1,6 @@
 ---
 name: slop
-description: Detect and remove unblocker-style code debt by auditing unnecessary fallbacks, redundant guards, stale backward-compatibility branches, and temporary workaround hacks that mask root causes. Use when a user asks for cleanup, simplification, post-hotfix hardening, or verification that defensive code is still justified before merge.
+description: Run a focused slop-only audit for unblocker-style code debt by auditing unnecessary fallbacks, redundant guards, stale backward-compatibility branches, and temporary workaround hacks that mask root causes. Use when a user asks specifically for cleanup, simplification, post-hotfix hardening, or a deeper slop scan outside the normal pre-Sendit review gate.
 ---
 
 # Slop
@@ -8,6 +8,8 @@ description: Detect and remove unblocker-style code debt by auditing unnecessary
 ## Goal
 
 Find and remove code that was added to unblock delivery but now adds complexity, hides defects, or preserves legacy behavior that no longer matters.
+
+`$review` already includes a diff-local slop pass. Use `$slop` when the task is specifically cleanup-only, when the user explicitly invokes it, or when the code needs a deeper slop audit before the normal review gate.
 
 ## Workflow
 
@@ -52,6 +54,7 @@ Treat every match as a hypothesis that needs context.
 - Do not remove compatibility paths unless support policy and rollout state confirm it is safe.
 - Prefer explicit failure for impossible states over silent fallback behavior.
 - Avoid cosmetic cleanup recommendations that do not reduce real risk or complexity.
+- Do not require a standalone `$slop` run before `$review`; use `$review` for the combined pre-Sendit gate.
 
 ## Output Contract
 

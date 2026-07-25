@@ -1,0 +1,4 @@
+interface:
+  display_name: "Surgery"
+  short_description: "Minimal, design-consistent repairs"
+  default_prompt: "Use $surgery when you specifically want a proper bug fix, hot fix, or repair with minimal effect on unrelated areas. Do not use it as the default path for ordinary feature implementation or broad refactoring."

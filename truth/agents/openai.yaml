@@ -1,4 +1,0 @@
-interface:
-  display_name: "Truth"
-  short_description: "Answer repo status from evidence"
-  default_prompt: "Use $truth to inspect the real repo state, separate planned, implemented, merged, released, and deployed work, identify tracker drift, and answer with one concrete next move."

@@ -1,6 +1,6 @@
 ---
 name: flow
-description: Orchestrate an autonomous delivery flow by chaining `chunk`, implementation, `slop`, `review`, and `sendit`. Use when a user wants the agent to take scoped work forward with minimal supervision from implementation through PR creation, merge, and post-merge cleanup.
+description: Orchestrate an autonomous delivery flow by chaining `chunk`, implementation, cleanup-aware `review`, and `sendit`. Use when a user wants the agent to take scoped work forward with minimal supervision from implementation through PR creation, merge, and post-merge cleanup.
 ---
 
 # Flow
@@ -47,25 +47,21 @@ Pause and ask only when one of these applies:
 - Prefer finishing a complete, reviewable increment over partial exploratory edits.
 - If a progress artifact exists, update implementation status after meaningful milestones, not every tiny edit.
 
-3. Run `$slop`.
-- Audit the changed areas for unnecessary fallbacks, stale guards, compat leftovers, and workaround hacks.
-- Remove or replace slop before final review.
-- If a progress artifact exists, note any scope cuts, cleanup decisions, or remaining known risks that affect the plan.
-
-4. Run `$review`.
-- Perform code, security, and style passes on the current diff.
+3. Run `$review`.
+- Perform slop, code, security, and style passes on the current diff.
 - If blocking issues remain and are locally fixable, fix them and repeat `$review` until it reports the diff is ready for delivery.
 - If review is blocking because required checks are unavailable due to missing credentials, services, tools, or other environment prerequisites, stop and report the blocked prerequisite instead of retrying review in a loop.
 - If a progress artifact exists, record review status, blocking findings, and check outcomes.
 
-5. Run `$sendit`.
+4. Run `$sendit`.
 - Proceed automatically when review is clean.
 - Before invoking `$sendit`, run a final progress sync on any existing repo-local planning or progress artifact that reflects the current work.
-- Update mechanically obvious status in `PLAN.md`, `plans/**/EXECMAP.md`, roadmap docs, or task checklists before delivery so those changes land in the same commit as the implementation.
+- Treat this as the final repo-doc sync point for the delivery PR.
+- Update mechanically obvious implementation, verification, and ready-to-land status in `PLAN.md`, `plans/**/EXECMAP.md`, roadmap docs, or task checklists before delivery so those changes land in the same commit as the implementation.
 - Do not create a new planning artifact at this point unless the user asked for one or the repo's existing process requires it.
 - If the correct progress update depends on an unresolved product, release, or status decision, stop and report that blocker before committing.
 - Stage the intended changes, commit, push, open the PR, wait for checks, merge safely, and clean up without asking for extra confirmation.
-- If a progress artifact exists, record the final merged or blocked state and any next-step handoff.
+- After merge, report final GitHub delivery state in the assistant response; do not create a follow-up docs-only PR just to record that the PR merged.
 
 ## Stage Handoff Contract
 
@@ -74,8 +70,7 @@ Do not advance stages unless the previous stage produced the required outputs:
 - `progress artifact` when present: current stage/status reflected accurately enough that another agent could resume from it.
 - `$chunk`: selected chunk, rationale, done criteria, checks, out-of-scope, and stop condition.
 - `implementation`: completed code changes plus exact commands and outcomes for required local checks.
-- `$slop`: blocking/non-blocking slop findings, confirmed keeps, slop verdict.
-- `$review`: blocking/non-blocking findings, checks run, and explicit delivery readiness.
+- `$review`: blocking/non-blocking slop, code, security, and style findings, checks run, and explicit delivery readiness.
 - `pre-sendit progress sync`: existing planning/progress artifacts updated, or explicit `no sync needed` with reason.
 - `$sendit`: branch name, commit, PR number and URL, check outcome, confirmed merge result, and cleanup actions.
 
@@ -91,7 +86,7 @@ When `$flow` completes or pauses, report:
 
 ## Guardrails
 
-- Keep order strict: `$chunk -> implementation -> $slop -> $review -> $sendit`.
+- Keep order strict: `$chunk -> implementation -> $review -> $sendit`.
 - Prefer updating an existing plan doc/checklist over duplicating the same progress in a second repo-local artifact.
 - Keep plan-doc edits terse and factual; do not rewrite the whole document just to mark progress.
 - If the existing plan doc is clearly stale or partially wrong, correct only the parts needed to make current status legible.
@@ -103,6 +98,8 @@ When `$flow` completes or pauses, report:
 - Do not run `$sendit` while blocking review issues remain.
 - Do not treat "auto-merge enabled" as equivalent to "merged."
 - Do not consider `$sendit` complete until the PR is actually merged.
+- Do not split implementation and mechanically obvious final plan/progress sync into separate PRs.
+- Do not create a second PR solely to record final GitHub delivery state in repo docs after merge.
 - If CI is pending and no external blocker exists, keep waiting instead of stopping after enabling auto-merge.
 - If dependencies or context are missing, pause and request only the minimum missing input.
 - Do not stop for routine implementation choices that can be resolved from local code and repo conventions.
@@ -113,6 +110,6 @@ When `$flow` completes or pauses, report:
 ## Example Triggers
 
 - "Use `$flow` to ship the next chunk end-to-end."
-- "Run `$flow` for chunk selection, implementation, cleanup, review, and full PR finalization."
+- "Run `$flow` for chunk selection, implementation, cleanup-aware review, and full PR finalization."
 - "Take this from scoped work to merged PR with `$flow`."
 - "Use `$flow` to implement this, open the PR, then merge and clean up once checks pass."

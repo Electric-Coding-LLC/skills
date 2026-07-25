@@ -179,7 +179,7 @@ Quality ownership is split by scope:
 
 - workers run the narrow local checks needed for their assignment
 - the supervisor evaluates integrated behavior across accepted steps
-- the supervisor owns `$slop` and `$review` before shipping decisions
+- the supervisor owns cleanup-aware `$review` before shipping decisions
 
 Run quality gates at milestone boundaries, not after every tiny worker step.
 
@@ -187,9 +187,8 @@ Default sequence:
 
 1. worker finishes a scoped assignment and runs step-local checks
 2. supervisor reviews and integrates the result
-3. once the current milestone is functionally complete, run `$slop` on the integrated diff
-4. fix or delegate any cleanup that falls out of `$slop`
-5. run `$review` before commit, PR, or merge decisions
+3. once the current milestone is functionally complete, run `$review` on the integrated diff
+4. fix or delegate any cleanup, correctness, security, style, or verification issue that falls out of `$review`
 
 Use additional `$review` passes whenever the integrated diff changes materially after review.
 Do not require every worker to run full-project cleanup or review unless the task genuinely calls for it.
