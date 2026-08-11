@@ -1,0 +1,4 @@
+interface:
+  display_name: "Options"
+  short_description: "Generate distinct, useful choices with tradeoffs"
+  default_prompt: "Use $options to generate a small set of grounded choices, compare their tradeoffs, and recommend the strongest one when justified."

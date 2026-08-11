@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deliver"
+  short_description: "Review, ship, deploy, and verify"
+  default_prompt: "Use $deliver to review, ship, deploy, and verify this ready change."

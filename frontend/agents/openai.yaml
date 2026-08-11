@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend"
+  short_description: "Iterate on frontend UI without slow full-suite checks"
+  default_prompt: "Use $frontend to implement and refine this UI quickly with the existing dev loop, lightweight targeted checks, and explicit deferred verification."
