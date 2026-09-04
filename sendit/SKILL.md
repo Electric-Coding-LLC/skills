@@ -1,109 +1,59 @@
 ---
 name: sendit
-description: Open and finalize a GitHub pull request in one flow using GitHub CLI. Use when the user explicitly wants to stage the intended changes, commit, push, open the PR, wait for checks, merge it safely, and clean up branches without stopping after PR creation.
+description: Stage the intended changes, commit, push, open or update a GitHub PR, wait for checks, merge, and clean up. Use when the user requests the full GitHub delivery cycle; preserve any narrower finish line such as draft-only or PR-only.
 ---
 
 # Sendit
 
-## Goal
+Own GitHub delivery of a ready change. An explicit `$sendit` request authorizes the full PR and merge cycle unless the user limits it. A parent workflow may supply that authorization; merely selecting this skill does not grant it. Production publication is a separate scope, though merge may trigger the repository's automatic deployment.
 
-Stage the intended changes, commit, push, open a PR, wait for checks, merge safely, and clean up as one uninterrupted delivery step. Treat invocation of `$sendit` as authorization to open the PR and continue through actual merge completion once the merge gates are satisfied.
+## Prerequisites and scope
 
-## Prerequisites
+- Check `gh --version` and `gh auth status`. Use an existing configured credential path when available; never print secrets. If access is still unavailable, report the exact blocker.
+- Resolve the repository and default branch with `gh repo view --json defaultBranchRef -q '.defaultBranchRef.name'`.
+- Inspect the current branch, intended base, complete branch diff, and local work before staging: `git status -sb`, `git diff`, `git diff --cached`, and relevant untracked files. Do not include unrelated committed changes just because they share the branch.
+- Reuse an existing PR for the intended branch. If the intended delivery is already merged and no new intended work remains, use `$yoink` only for remaining authorized cleanup. If the user is delivering new work on a previously merged branch, isolate that new change on an appropriate branch rather than reusing the old PR. For a closed unmerged PR, resolve whether the current request calls for reopening or a new delivery before proceeding.
+- On the default branch, create `codex/{description}` for the intended change. Otherwise use the current branch only when it belongs to this work. Preserve other branches and worktrees.
 
-- Require GitHub CLI `gh`. Run `gh --version` and stop if missing.
-- Require authenticated `gh` session. Run `gh auth status` and stop if not authenticated.
-- Resolve the repository default branch:
-  - `gh repo view --json defaultBranchRef -q '.defaultBranchRef.name'`
+## Final planning sync
 
-## Naming Conventions
+Before staging, reconcile existing task artifacts such as `PLAN.md`, `EXECMAP.md`, roadmap entries, and checklists with implementation and verification evidence.
 
-- Branch: `codex/{description}` when starting from main/master/default.
-- Commit: `{description}` (terse).
-- PR title: `[codex] {description}` summarizing the full diff.
+- Update factual completion, verification, and ready-to-land state so it lands with the code. Prefer a repo helper when available and useful.
+- Under `$execmap` semantics, roadmap `completed` means internal implementation completion. Mark it and close the active plan before delivery when exit criteria and required checks are true; GitHub remains the source of truth for merge state.
+- Follow the repository's actual status meanings. Do not mark merge, deployment, or release criteria complete before they occur. A documented post-merge tracker integration may handle those separately.
+- Do not create another tracker or a follow-up docs-only PR just to record merge completion. Ask only when the correct update depends on an unresolved material decision.
 
-## Workflow
+## Prepare and open the PR
 
-1. Prepare and open the PR.
-- If on main/master/default, create a branch: `git checkout -b "codex/{description}"`
-- Otherwise stay on the current branch.
-- Before staging, run a progress sync on existing planning artifacts:
-  - Inspect `PLAN.md`, `plans/**/EXECMAP.md`, roadmap docs, and task checklists that clearly belong to the current work.
-  - Treat this as the delivery PR's final repo-doc sync point.
-  - Update mechanically obvious progress, status, exit-criteria, verification, and ready-to-land truth now so those docs are included in the same delivery commit as the code.
-  - If an `execmap` helper is available, prefer it for status/shape checks when it reduces manual work.
-  - Do not create new planning artifacts unless the user asked for them or the repo's existing process requires them.
-  - If the correct update depends on an unresolved product, release, or status decision, stop and report the blocker before committing.
-- Inspect and classify the working tree before staging:
-  - `git status -sb`
-  - `git diff --name-only`
-  - `git diff --cached --name-only`
-- Stage only files that belong to the requested work.
-- If unrelated or ambiguous changes are present, leave them unstaged and report them; ask only when the intended stage set cannot be determined safely.
-- Use `git add -A` only when the user explicitly asks to include all working-tree changes or the inspected diff clearly contains only the intended work.
-- Commit tersely with the description:
-  - `git commit -m "{description}"`
-- Run checks if they have not already been run. If checks fail due to missing deps/tools, install dependencies and rerun once.
-- Push with tracking:
-  - `git push -u origin $(git branch --show-current)`
-- If push fails due to workflow auth errors, pull from the default branch and retry the push.
-- Open a draft PR:
-  - `GH_PROMPT_DISABLED=1 GIT_TERMINAL_PROMPT=0 gh pr create --draft --fill --head $(git branch --show-current)`
-- Write the PR description to a temp file with real newlines and update the PR body from that file.
-- PR description must cover the issue, user impact, root cause, fix, and validation performed.
-- PR description must include any planning/progress docs updated before staging, or say no planning sync was needed.
+1. Establish readiness.
+- Run required repo-native checks if valid evidence for the current content is absent. Fix change-caused failures and rerun affected checks.
+- Restore missing dependencies with the repository's documented tooling when appropriate; do not change dependency versions or lockfiles just to bypass an environment problem.
+- Finalize planning status from the results above. Recheck affected evidence if those edits change executable content.
 
-2. Resolve the target PR state.
-- Use the current branch PR unless the user explicitly names a different PR:
-  - `gh pr view --json number,state,isDraft,headRefName,url`
-- Stop if the PR is already merged or closed.
-- If the PR is draft, mark it ready for review before continuing:
-  - `gh pr ready <pr-number>`
-- Stop and report if marking it ready fails.
+2. Stage and commit only intended changes.
+- Inspect any existing staged content. Leaving an unrelated staged file untouched does not exclude it from a commit. Preserve that index state and stop before committing if the intended changes cannot be isolated safely; do not silently unstage or commit someone else's work.
+- Stage explicit paths or hunks. Use `git add -A` only when the user requests all changes or inspection proves everything belongs to the task.
+- Inspect the staged diff and run `git diff --cached --check` before committing.
+- Use a concise commit message. If the intended change is already committed, continue without creating an empty commit.
 
-3. Verify merge readiness.
-- Watch checks:
-  - `gh pr checks <pr-number> --watch --fail-fast`
-- Inspect readiness:
-  - `gh pr view <pr-number> --json reviewDecision,mergeable,mergeStateStatus,statusCheckRollup,url`
-- Stop and report if required checks fail or merge is blocked.
-- If checks are still running and the PR is otherwise mergeable, enable auto-merge:
-  - `gh pr merge <pr-number> --auto --squash --delete-branch`
-- Keep watching until the PR is actually merged. Auto-merge enabled is not completion.
+3. Push the intended branch.
+- Use `git push -u origin <branch>`.
+- Diagnose a rejection before recovery. Authentication or workflow-permission errors require correcting the authorized credential path, not pulling another branch. Retry after the cause is resolved.
+- For branch divergence, inspect local and remote history before integrating anything. Preserve unrelated work, avoid blind pulls or force pushes, and revalidate any changed content before proceeding.
 
-4. Merge and clean up.
-- Default merge strategy to squash unless the user requests otherwise:
-  - `gh pr merge <pr-number> --squash --delete-branch`
-- Ensure you are not on the PR branch before local cleanup.
-- Switch to the default branch and fast-forward:
-  - `git switch <default-branch>`
-  - `git pull --ff-only`
-- Do not modify repo-local planning artifacts after merge just to record that the PR merged; GitHub and the final report are the delivery-state source of truth.
-- Delete the local head branch if it still exists:
-  - `git branch -d <head-branch>`
-- Prune stale remote refs:
-  - `git remote prune origin`
+4. Create or update the intended PR.
+- Prefer the repository's title and description conventions; summarize the final behavior and validation concisely.
+- Write multiline descriptions to a temporary file and pass it with `--body-file` to `gh pr create` or `gh pr edit`. Do not execute the body file or interpolate its prose into shell code.
+- If no PR exists, create a draft with an explicit head and verified base, for example `gh pr create --draft --head <branch> --base <base> --title <title> --body-file <file>`.
+- Mention relevant planning changes when useful to reviewers; do not require boilerplate declaring that no planning sync was needed.
 
-## Guardrails
+## Finalize
 
-- Never merge if required checks are failing unless the user explicitly requests that override.
-- Never treat "auto-merge enabled" as successful completion.
-- Never use destructive git recovery commands (`git reset --hard`, `git checkout --`) as part of this flow.
-- If uncommitted local changes block checkout or cleanup, stop and ask before stashing or changing branches.
-- If `gh pr merge --delete-branch` already removed the remote branch, treat that as success and continue local cleanup.
-- If the user explicitly says to keep the PR in draft, stop after PR creation instead of marking it ready.
-- Do not leave mechanically obvious `PLAN.md`, `EXECMAP.md`, roadmap, or checklist updates for a follow-up status-only commit.
-- Do not create a second PR solely to sync final docs after merge.
+If the user requested PR-only or draft-only delivery, stop at that finish line and report it accurately. Otherwise follow [Yoink](../yoink/SKILL.md) for draft readiness, checks, merge, and cleanup. Pass the reviewed revision and existing authorization; do not ask for approval again.
 
-## Output Contract
+Keep owning the result until the PR is actually merged or a concrete blocker requires user action. Enabled auto-merge or a queued merge is not completion.
 
-- Report:
-  - Branch name, commit, PR number, and PR URL.
-  - Whether the PR had to be marked ready for review.
-  - Planning/progress docs updated before staging, or `no sync needed`.
-  - Check outcome, including notable failing check names if blocked.
-  - Merge strategy used.
-  - Whether auto-merge was enabled as an intermediate step.
-  - Confirmed merged state.
-  - Cleanup actions performed.
-- If blocked, report exactly which step failed and the next action needed from the user.
+## Report
+
+Report the change, commit, PR URL, check outcome, actual merge or draft state, and cleanup. Mention planning updates and residual work only when material. Preserve local work if it prevents cleanup, report the remaining boundary, and never use destructive git recovery to force completion.

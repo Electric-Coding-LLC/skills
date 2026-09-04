@@ -11,7 +11,7 @@ Establish, audit, and document the system design for a repository or subsystem.
 
 This skill is for architecture judgment. It should preserve the user's goal while checking whether the proposed design fits the real repository.
 
-Architecture work is standalone. It may lead to a plan, guidance, a general implementation, a cleanup, a refactor, or no code change at all. It does not imply `$surgery` as the implementation companion.
+Architecture work is standalone. It may lead to a plan, guidance, a general implementation, a cleanup, a refactor, or no code change at all. It does not imply a repair workflow as the implementation companion.
 
 ## Operating Rules
 
@@ -20,7 +20,7 @@ Architecture work is standalone. It may lead to a plan, guidance, a general impl
 - Prefer the smallest design-consistent correction over a broad redesign.
 - Tie recommendations to concrete files, imports, commands, or repeated patterns.
 - Edit guidance docs only when the user asks for changes or the update is part of the requested architecture work.
-- Use another skill after architecture work only when that skill is independently triggered by the user's request; use `$surgery` only for explicit surgery requests or repair-oriented bug/hotfix work.
+- Use another skill after architecture work only when that skill is independently triggered by the user's request; use `$debug` for repair work and `$surgery` only when explicitly requested.
 
 ## Workflow
 

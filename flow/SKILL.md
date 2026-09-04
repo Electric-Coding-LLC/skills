@@ -1,115 +1,36 @@
 ---
 name: flow
-description: Orchestrate an autonomous delivery flow by chaining `chunk`, implementation, cleanup-aware `review`, and `sendit`. Use when a user wants the agent to take scoped work forward with minimal supervision from implementation through PR creation, merge, and post-merge cleanup.
+description: Take one scoped implementation chunk through implementation, review, and GitHub PR merge. Use when the user wants autonomous delivery of a bounded change; use superflow for a full planned delivery unit and deliver for production publication of a ready change.
 ---
 
 # Flow
 
-## Goal
-
-Execute one full delivery cycle from scoped chunk selection through cleanup, review, PR creation, merge, and post-merge cleanup. Treat invocation of `$flow` as authorization to run `$sendit` once technical gates are satisfied.
-
-## Autonomy Policy
-
-Default behavior under `$flow`:
-
-- Proceed autonomously through chunk selection, implementation, cleanup, and review.
-- If the repo already has a plan doc, checklist, or progress tracker for the current task, keep it updated as work advances.
-- Make reasonable local decisions without pausing when the scope, repo patterns, and verification path are clear.
-- Keep the user informed with concise progress updates, but do not ask for confirmation at each stage.
-
-Pause and ask only when one of these applies:
-
-- Product intent or required behavior is ambiguous in a way that could change the implementation materially.
-- The work reveals a risky cross-cutting change outside the selected chunk.
-- Required credentials, services, permissions, or missing environment prerequisites block safe execution.
-- Review finds a tradeoff that needs user preference rather than engineering judgment.
+Complete one reviewable increment through a merged PR and branch cleanup. An explicit `$flow` request authorizes that GitHub delivery unless the user sets a narrower finish line. Selecting a skill from context does not expand the user's authorization. Production publication is a separate scope; recognize any deployment automatically triggered by merge.
 
 ## Workflow
 
-0. Check for an existing progress artifact.
-- Look for a repo-local plan doc, checklist, or task tracker that clearly matches the current work.
-- Prefer the most specific existing artifact over creating a new one.
-- Do not create a new plan doc unless the user explicitly asks for one.
-- If one exists, update it at each meaningful stage transition with factual status, not aspirational prose.
+1. Establish the chunk.
+- Read the task, repository instructions, current branch and changes, and any relevant existing plan.
+- Use `$chunk` unless the user already supplied a bounded implementation unit.
+- Capture the outcome, acceptance criteria, repo-native checks, and scope boundaries.
+- If the result is `No justified next chunk`, `measure first`, `blocked`, or `done for now`, report it without inventing implementation work.
 
-1. Run `$chunk`.
-- Identify the next moderate, context-safe implementation chunk.
-- Capture definition of done, exact repo-native verification commands for the chunk, and out-of-scope boundaries.
-- If the user already provides a preselected chunk, treat that as the chunk output and continue.
-- If `$chunk` returns `No justified next chunk`, `measure first`, `blocked`, or `done for now`, stop the flow there and report that outcome instead of pushing into implementation.
-- If a progress artifact exists, record the selected chunk or stop condition before moving on.
+2. Implement the selected scope.
+- Make a complete, coherent change and run relevant checks. Preserve unrelated work.
+- Keep any existing task plan current at meaningful milestones; do not create a new tracker solely to run this flow.
+- Resolve routine choices from repository evidence. Ask only when missing intent, access, or a material tradeoff prevents safe progress.
 
-2. Execute the implementation.
-- Implement only what `$chunk` defines or what the user already scoped.
-- Keep changes tight to scope, run targeted checks while coding, and finish by running the repo-native local equivalent of required CI checks for the changed scope before review.
-- If a reusable handoff artifact is explicitly requested, draft that separately instead of widening this flow.
-- Prefer finishing a complete, reviewable increment over partial exploratory edits.
-- If a progress artifact exists, update implementation status after meaningful milestones, not every tiny edit.
-
-3. Run `$review`.
-- Perform slop, code, security, and style passes on the current diff.
-- If blocking issues remain and are locally fixable, fix them and repeat `$review` until it reports the diff is ready for delivery.
-- If review is blocking because required checks are unavailable due to missing credentials, services, tools, or other environment prerequisites, stop and report the blocked prerequisite instead of retrying review in a loop.
-- If a progress artifact exists, record review status, blocking findings, and check outcomes.
+3. Run `$review` on the complete intended delivery diff.
+- Fix actionable blocking findings and rerun affected checks or review when the content changes.
+- Reuse still-valid verification evidence. Stop on an external prerequisite that cannot be resolved within the task instead of repeating the same blocked review.
 
 4. Run `$sendit`.
-- Proceed automatically when review is clean.
-- Before invoking `$sendit`, run a final progress sync on any existing repo-local planning or progress artifact that reflects the current work.
-- Treat this as the final repo-doc sync point for the delivery PR.
-- Update mechanically obvious implementation, verification, and ready-to-land status in `PLAN.md`, `plans/**/EXECMAP.md`, roadmap docs, or task checklists before delivery so those changes land in the same commit as the implementation.
-- Do not create a new planning artifact at this point unless the user asked for one or the repo's existing process requires it.
-- If the correct progress update depends on an unresolved product, release, or status decision, stop and report that blocker before committing.
-- Stage the intended changes, commit, push, open the PR, wait for checks, merge safely, and clean up without asking for extra confirmation.
-- After merge, report final GitHub delivery state in the assistant response; do not create a follow-up docs-only PR just to record that the PR merged.
+- Let `$sendit` own the final pre-staging progress sync, commit, push, PR, checks, merge, and branch cleanup.
+- Pass the selected scope, review evidence, and existing authorization to it.
+- Continue until the PR is actually merged or a concrete blocker requires user action. An open PR or enabled auto-merge is not completion.
 
-## Stage Handoff Contract
+## Boundaries and reporting
 
-Do not advance stages unless the previous stage produced the required outputs:
+Do not widen the chunk without user direction or treat routine progress updates as approval checks. Required repository checks must pass before delivery; a lighter ad hoc check does not replace a defined gate.
 
-- `progress artifact` when present: current stage/status reflected accurately enough that another agent could resume from it.
-- `$chunk`: selected chunk, rationale, done criteria, checks, out-of-scope, and stop condition.
-- `implementation`: completed code changes plus exact commands and outcomes for required local checks.
-- `$review`: blocking/non-blocking slop, code, security, and style findings, checks run, and explicit delivery readiness.
-- `pre-sendit progress sync`: existing planning/progress artifacts updated, or explicit `no sync needed` with reason.
-- `$sendit`: branch name, commit, PR number and URL, check outcome, confirmed merge result, and cleanup actions.
-
-## Final Reporting Contract
-
-When `$flow` completes or pauses, report:
-
-- `Outcome`: what was completed or why execution stopped.
-- `Changes made`: concise summary of the implemented behavior or files touched.
-- `Checks run`: exact verification performed and any skipped checks with reason.
-- `Open risks or blockers`: only unresolved items that materially affect next steps.
-- `Next action`: either what the user should decide or what technical blocker is preventing `$sendit`.
-
-## Guardrails
-
-- Keep order strict: `$chunk -> implementation -> $review -> $sendit`.
-- Prefer updating an existing plan doc/checklist over duplicating the same progress in a second repo-local artifact.
-- Keep plan-doc edits terse and factual; do not rewrite the whole document just to mark progress.
-- If the existing plan doc is clearly stale or partially wrong, correct only the parts needed to make current status legible.
-- If `$chunk` says there is no justified implementation chunk, stop. Do not reinterpret that as permission to find something else.
-- Do not widen scope beyond the selected chunk unless the user explicitly expands scope.
-- Do not treat "a check ran" as sufficient when the repo defines a closer local equivalent of the PR gate.
-- Do not advance past implementation or run `$sendit` while required local checks are failing, skipped, or still undiscovered in a repo that defines them.
-- If required checks are blocked by unavailable local prerequisites, stop and report the blocker instead of looping on `$review`.
-- Do not run `$sendit` while blocking review issues remain.
-- Do not treat "auto-merge enabled" as equivalent to "merged."
-- Do not consider `$sendit` complete until the PR is actually merged.
-- Do not split implementation and mechanically obvious final plan/progress sync into separate PRs.
-- Do not create a second PR solely to record final GitHub delivery state in repo docs after merge.
-- If CI is pending and no external blocker exists, keep waiting instead of stopping after enabling auto-merge.
-- If dependencies or context are missing, pause and request only the minimum missing input.
-- Do not stop for routine implementation choices that can be resolved from local code and repo conventions.
-- Do not confuse status updates with permission checks.
-- Prefer explicit reporting of assumptions over silent scope drift.
-- Prefer stopping over speculative optimization when measurement or a new requirement is the real next step.
-
-## Example Triggers
-
-- "Use `$flow` to ship the next chunk end-to-end."
-- "Run `$flow` for chunk selection, implementation, cleanup-aware review, and full PR finalization."
-- "Take this from scoped work to merged PR with `$flow`."
-- "Use `$flow` to implement this, open the PR, then merge and clean up once checks pass."
+Report the behavior changed, verification and any material gap, PR/merge result, cleanup, and remaining blocker or next action when one exists. Final GitHub merge state belongs in the report; do not create a second docs-only PR merely to record it.

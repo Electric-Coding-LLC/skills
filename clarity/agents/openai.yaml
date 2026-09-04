@@ -1,4 +1,4 @@
 interface:
   display_name: "Clarity"
   short_description: "Check prompt vagueness, logic risk, and missing execution detail"
-  default_prompt: "Evaluate this prompt for vagueness and poor-result risk, classify the prompt type, and ask only the most important clarifying questions."
+  default_prompt: "Use $clarity to evaluate this prompt with the available session and project context, identifying only material gaps that require clarification."

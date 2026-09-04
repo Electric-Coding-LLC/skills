@@ -15,7 +15,7 @@ Prove the relevant claim with the least ceremony that is still reliable.
 - the proof should match the claim being made
 
 It is not a full code review.
-- Use `$review` when the user wants readiness, security, and style assessment before `$yeet`.
+- Use `$review` when the user wants readiness, security, and style assessment before `$sendit`.
 
 ## Workflow
 

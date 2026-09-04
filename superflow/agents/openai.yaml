@@ -1,4 +1,4 @@
 interface:
   display_name: "Superflow"
-  short_description: "Complete the active execmap through merge"
-  default_prompt: "Use $superflow to gather the current roadmap version, active EXECMAP, or project goal, build or update the execmap, handle UI design before implementation when direction is unclear or high-impact, create wireframes only when they materially clarify execution, complete all executable mapped work in the active EXECMAP or current delivery unit under $supervisor, run cleanup-aware $review with fixes, and finish with $sendit. Keep roadmap, PLAN.md, EXECMAP.md, and any repo-local progress docs truthful when stage work changes tracker truth, and sync final implementation, verification, and ready-to-land status before $sendit so it lands in the same PR as the code. Report final GitHub delivery state without creating a second docs-only PR. Leave public release or publish scripts for me to run manually."
+  short_description: "Complete one planned unit through GitHub merge"
+  default_prompt: "Use $superflow to complete the active delivery unit through planning, supervised implementation, review, and GitHub merge, leaving separate publication outside scope unless requested."

@@ -1,4 +1,4 @@
 interface:
   display_name: "Yoink"
-  short_description: "Merge PRs after CI and clean up branches safely."
-  default_prompt: "Use $yoink to mark this PR ready if it's draft, verify checks, wait intelligently for CI, merge it safely, and clean up branches."
+  short_description: "Finalize a PR or finish merged-PR cleanup"
+  default_prompt: "Use $yoink to finalize this existing PR within my requested scope, verify the actual merge result, and safely complete the remaining branch cleanup."

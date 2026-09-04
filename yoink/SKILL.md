@@ -1,72 +1,45 @@
 ---
 name: yoink
-description: "Finalize a GitHub pull request after it is opened (often after using Yeet): verify CI/check status, merge safely with GitHub CLI, and clean up local/remote branches. Use when the user asks to merge a PR, wait for checks, or perform post-merge cleanup."
+description: Finalize an existing GitHub PR through required checks, merge, and branch cleanup, or finish cleanup for an already-merged PR. Use when the user requests PR finalization; a request only to inspect or wait for checks does not authorize merging.
 ---
 
 # Yoink
 
-## Prerequisites
+Operate on the user's intended existing PR. Preserve the requested finish line and any authorization inherited from `$sendit` or another delivery workflow. Loading this skill for a status question does not authorize a merge.
 
-- Require GitHub CLI `gh`. Run `gh --version` and stop if missing.
-- Require authenticated `gh` session. Run `gh auth status` and stop if not authenticated.
-- Resolve the repository default branch:
-  - `gh repo view --json defaultBranchRef -q '.defaultBranchRef.name'`
-- Resolve the target PR:
-  - Prefer user-provided PR number.
-  - Otherwise use the current branch PR with:
-    - `gh pr view --json number,state,isDraft,headRefName,url`
+## Resolve state
 
-## Workflow
+- Check `gh --version`, `gh auth status`, the repository, and its default branch.
+- Prefer a supplied PR number or URL; otherwise resolve the current branch PR.
+- Inspect state, draft status, head/base branches, and head revision using `gh pr view <pr> --json number,state,isDraft,headRefName,baseRefName,headRefOid,url`.
+- If already merged, skip draft, checks, and merge operations and perform only remaining requested cleanup. If closed without merging, report that state; do not reopen it without authorization.
+- For an open draft PR, mark it ready with `gh pr ready <pr>` only when review/merge readiness is in scope. Respect a request to keep it draft.
 
-1. Validate PR state.
-- Stop if the PR is already merged or closed.
-- If PR is draft, mark it ready for review before continuing:
-  - `gh pr ready <pr-number>`
-- Stop and report if marking the PR ready fails.
+## Checks and merge
 
-2. Verify checks and merge readiness.
-- Watch checks:
-  - `gh pr checks <pr-number> --watch --fail-fast`
-- Inspect merge readiness:
-  - `gh pr view <pr-number> --json reviewDecision,mergeable,mergeStateStatus,statusCheckRollup,url`
-- Stop and report if required checks fail or merge is blocked.
-- If checks are still running, continue waiting and polling until they resolve unless an external blocker requires user input.
-- Auto-merge may be enabled when policy allows, but that is only an intermediate step. `$yoink` is not complete until the PR is actually merged.
+1. Verify readiness for the current PR head.
+- Inspect `gh pr view <pr> --json reviewDecision,mergeable,mergeStateStatus,statusCheckRollup,headRefOid,url` and repository policy.
+- Wait for required checks with `gh pr checks <pr> --required --watch --fail-fast`, and inspect any additional repo-defined gates. Keep the user informed while waiting.
+- Distinguish no configured checks from expected checks that have not started. Confirm CI and branch policy before deciding that absent checks are acceptable; report the actual condition rather than inventing a pass.
+- Diagnose failures. Fix within the authorized task when appropriate; otherwise report the specific blocker. Recheck the affected content and current head after any fix or new push.
 
-3. Merge.
-- Default merge strategy to squash unless user requests otherwise:
-  - `gh pr merge <pr-number> --squash --delete-branch`
-- If checks are still running but PR is otherwise mergeable, offer auto-merge:
-  - `gh pr merge <pr-number> --auto --squash --delete-branch`
-- After enabling auto-merge, keep watching until the PR is actually merged.
+2. Merge only when authorized and gates are satisfied.
+- Default to squash unless user or repository policy specifies another method.
+- For an ordinary merge, use `gh pr merge <pr> --squash --match-head-commit <verified-sha>`. Handle a head mismatch by inspecting the new change and its checks before retrying.
+- Follow a required merge queue instead of bypassing it. Auto-merge may be enabled within existing merge authorization while gates are pending, but continue waiting for the actual result.
+- Do not override failing required checks or branch protections without explicit user authority and applicable repository policy.
+- Confirm the terminal merged state and merge revision. An open PR, queue entry, or enabled auto-merge is not a merged PR.
 
-4. Clean up local git state.
-- Ensure you are not on the PR branch before deleting it.
-- Switch to default branch and fast-forward:
-  - `git switch <default-branch>`
-  - `git pull --ff-only`
-- Delete local head branch if it still exists:
-  - `git branch -d <head-branch>`
-- Prune stale remote refs:
-  - `git remote prune origin`
+## Cleanup
 
-## Guardrails
+Only clean up after confirming the PR is merged and cleanup is within the request.
 
-- Never merge if required checks are failing unless the user explicitly requests that override.
-- Never treat "auto-merge enabled" as a successful completion state.
-- Never use destructive git recovery commands (`git reset --hard`, `git checkout --`) as part of cleanup.
-- If uncommitted local changes block checkout/cleanup, stop and ask before stashing or changing branches.
-- If `gh pr merge --delete-branch` already removed the remote branch, treat that as success and continue local cleanup.
-- If the user explicitly says to keep the PR in draft, stop instead of marking it ready.
+- Inspect local state and worktrees before changing branches. Preserve unrelated staged or unstaged work and branches checked out elsewhere; do not stash, reset, or force-delete to complete cleanup.
+- In the task-owned checkout, switch to the default branch and update with `git pull --ff-only` when safe. If another worktree owns it, use the repository's worktree cleanup procedure instead of forcing a checkout.
+- Delete the merged head branch only after confirming the local/remote ref still belongs to the completed PR and contains no additional work. Use `git branch -d <head>` for safe local deletion; if it refuses, inspect the reason rather than escalating automatically.
+- Remove the corresponding remote branch when safe and still present, then prune stale remote refs. An already-deleted branch is success. Never remove a default/base branch or a reused branch merely because its name appeared on the PR.
+- Do not remove the current worktree directly. If local work prevents safe cleanup, report the merged result and precise remaining cleanup separately.
 
-## Output Contract
+## Report
 
-- Report:
-  - PR number and URL.
-  - Whether the PR had to be auto-marked ready for review.
-  - Check outcome (pass/fail and notable failing check names).
-  - Merge strategy used.
-  - Whether auto-merge was enabled as an intermediate step.
-  - Confirmed merged state.
-  - Cleanup actions performed (local branch deleted, default branch updated, prune run).
-- If blocked, report exactly which step failed and the next action needed from the user.
+Report the PR URL, checks and actual state, merge revision when applicable, cleanup completed, and anything still blocked. A status-only request ends with status; a cleanup-only request does not trigger another merge.
