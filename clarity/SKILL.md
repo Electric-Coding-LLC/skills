@@ -41,6 +41,7 @@ Identify why a prompt may produce poor results and what must be clarified.
 
 3. Run an ambiguity scan.
 - Use the rubric in `references/prompt-quality-rubric.md`.
+- Evaluate the prompt together with available session context, repo instructions, and discoverable project configuration. Missing repetition of known information is not a prompt defect.
 - Check for weak or missing elements:
   - Objective
   - Audience
@@ -53,6 +54,7 @@ Identify why a prompt may produce poor results and what must be clarified.
   - Allowed tools or environment constraints
   - Verification commands
   - Reporting format
+- Discover routine paths, commands, and conventions from the repo when available. Ask the user for missing intent or constraints that cannot be resolved from that evidence.
 
 4. Explain likely failure modes.
 - For each major gap, state the likely output problem.

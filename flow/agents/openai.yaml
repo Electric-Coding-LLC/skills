@@ -1,4 +1,4 @@
 interface:
   display_name: "Flow"
-  short_description: "Autonomous delivery flow with plan tracking"
-  default_prompt: "Use $flow to take this work from scoped implementation through cleanup-aware $review and $sendit automatically, keeping any existing repo plan doc, EXECMAP, or checklist updated as progress changes. Before $sendit, sync mechanically obvious implementation, verification, and ready-to-land planning/progress status so it is included in the same delivery commit as the code. Treat invocation of $flow as authorization to open, merge, and clean up the PR once review and CI gates are satisfied, and report final GitHub delivery state without creating a second docs-only PR."
+  short_description: "Ship one scoped change through GitHub merge"
+  default_prompt: "Use $flow to complete this scoped change through implementation, review, and GitHub merge, preserving my finish line and existing planning artifacts."

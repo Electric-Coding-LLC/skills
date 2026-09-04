@@ -1,4 +1,4 @@
 interface:
   display_name: "Supervisor"
-  short_description: "Lead longer work with scoped delegation"
-  default_prompt: "Use $supervisor to lead this goal from plan to completion, delegating bounded work to fresh subagents when that improves focus or preserves context, while keeping review, integration, and git decisions in the main thread."
+  short_description: "Lead scoped delegation and integration"
+  default_prompt: "Use $supervisor to lead this goal with bounded delegation, integrated verification, and existing planning artifacts while preserving my scope and delivery authorization."

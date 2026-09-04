@@ -1,26 +1,23 @@
 ---
 name: review
-description: "Run a pre-Sendit quality gate on local code changes. Use when a user asks for a review, readiness check, or pre-PR check after making changes and before running Sendit. Perform four passes: (1) slop review for unnecessary fallbacks, stale guards, compatibility leftovers, and unblocker hacks, (2) code review for bugs/regressions/tests, (3) security review for common vulnerabilities and secret exposure, and (4) style review for lint/format/convention drift. Return blocking issues, non-blocking suggestions, and an explicit ready-for-Sendit verdict."
+description: "Review an intended working-tree change, commit, branch, or pull request for slop, correctness, security, style, and delivery readiness. Use for code review or a pre-PR quality gate; resolve the requested scope before choosing the diff."
 ---
 
 # Review
 
 ## Goal
 
-Assess working-tree changes before push/PR and decide whether it is safe to proceed to `$sendit`.
+Assess the complete intended change and decide whether it is safe to proceed to `$sendit`.
 Focus on signal, not volume: identify concrete risks, cleanup debt that would make the change harder to own, explain impact, and avoid speculative noise.
 
 ## Workflow
 
-1. Capture review scope.
-- Inspect repository state:
-  - `git status --short`
-  - `git diff --stat`
-  - `git diff --name-only --diff-filter=ACMR`
-- Include both unstaged and staged changes:
-  - `git diff`
-  - `git diff --cached`
-- If there are no changes, report "nothing to review" and stop.
+1. Resolve and capture review scope.
+- Honor an explicit file, working-tree, commit, branch, or PR scope. Otherwise inspect repository state and infer the intended change from the task and current branch; state the selected scope and base.
+- Use `git status --short`, `git diff`, and `git diff --cached` to identify local changes. Inspect relevant untracked files from `git ls-files --others --exclude-standard`; ordinary diffs omit them. Include deletions and renames.
+- For a branch or PR, resolve its actual target branch, then inspect the committed change with `git diff <base>...HEAD` (or the named head). Do not assume an empty working tree means an empty change. For a single commit, inspect that commit's patch; resolve the intended parent for a merge commit.
+- When reviewing a pending local delivery, include its intended committed, staged, unstaged, and untracked changes. Keep unrelated local work outside the review. For a named remote PR, inspect its actual revision and distinguish it from a potentially different local checkout.
+- If the base or intended changes cannot be determined safely, ask only for that missing scope. Report "nothing to review" only after checking the entire selected scope.
 
 2. Discover repo-native verification commands before running checks.
 - Inspect local project files such as `package.json`, `Makefile`, `justfile`, `pyproject.toml`, `go.mod`, and CI config.
@@ -39,6 +36,7 @@ Focus on signal, not volume: identify concrete risks, cleanup debt that would ma
 - Look for behavior changes, correctness bugs, regression risk, missing edge-case handling, and test gaps.
 - Prioritize findings that can cause broken functionality, data loss, or operational incidents.
 - Run the discovered repo-native checks that are the local equivalent of required PR gates for the changed scope.
+- Reuse passing results only when they cover the reviewed content and relevant environment; rerun affected checks after changes. Do not claim local checks prove a different remote revision.
 - Prefer the narrowest command that still matches the repo's real gate; do not substitute lighter ad hoc checks when an exact local command exists.
 - If a required check is not run, fails, or cannot run locally, treat that as blocking unless the repo genuinely has no local equivalent.
 

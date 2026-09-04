@@ -1,4 +1,4 @@
 interface:
   display_name: "Megaflow"
-  short_description: "Sequential roadmap loop over one-version Superflows"
-  default_prompt: "Use $megaflow to read the roadmap and active plan, choose the next incomplete version, promote it into active execution if needed, and run a fresh $superflow for that one version until its delivery state is actually merged or truly blocked. Keep roadmap, PLAN.md, and promoted EXECMAP state synced at each loop boundary instead of relying on a final repo recheck to remember progress updates. After each merge, normalize stale-but-obvious planning state yourself before deciding whether to continue to the next version. Treat roadmap completion as internal completion rather than public publish, and stop only on roadmap ambiguity, blocked delivery, or planning state that is not mechanically obvious to normalize."
+  short_description: "Deliver roadmap versions sequentially"
+  default_prompt: "Use $megaflow to deliver the authorized roadmap one version at a time, reconciling implementation status before each delivery commit and reassessing after each merge."

@@ -13,6 +13,7 @@ Find the real cause of a failure and fix it without turning the symptom into tec
 - Use `$debug` for failures, regressions, broken flows, confusing runtime behavior, and failing checks.
 - Use `$slop` when the main question is whether fallback hacks or guards should be removed.
 - Use `$review` when the main question is whether an existing diff is ready to ship.
+- `$surgery` is an explicit shorthand for this repair workflow, not a separate implementation process.
 
 ## Workflow
 
@@ -35,6 +36,7 @@ Find the real cause of a failure and fix it without turning the symptom into tec
 4. Choose the narrowest correct fix.
 - Fix the cause, not the nearest visible symptom.
 - Keep the blast radius limited, but change the right boundary even if it touches more files.
+- Reuse the repository's types, utilities, fixtures, and design patterns. Preserve surrounding architecture and behavior; remove repair-introduced dead code or abstractions rather than widening into general cleanup.
 - Preserve or strengthen invariants.
 - Prefer explicit failure for impossible states over silent recovery.
 - Avoid fallbacks, catch-all guards, compatibility branches, or "just in case" logic unless they are the actual product requirement.
@@ -51,6 +53,7 @@ Find the real cause of a failure and fix it without turning the symptom into tec
 - Do not add default values, broad null guards, retries, swallowed errors, or alternate paths to make the symptom disappear.
 - Do not remove safety checks at untrusted boundaries without replacement.
 - Do not broaden into unrelated cleanup unless the cleanup is needed for the root-cause fix.
+- Follow repository dependency policy and justify any necessary new dependency; do not introduce one when an existing capability suffices.
 - Do not claim the bug is fixed without rerunning the original symptom or explaining why that proof was unavailable.
 
 ## Output Contract

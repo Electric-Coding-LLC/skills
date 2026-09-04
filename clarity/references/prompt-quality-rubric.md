@@ -1,20 +1,16 @@
 # Prompt Quality Rubric
 
-Use this rubric to diagnose prompt quality before execution.
+Use this rubric to diagnose prompt quality before execution. Evaluate the prompt together with available conversation, instructions, and project evidence; do not require the user to repeat discoverable facts.
 
 ## Scoring
 
-Score each dimension from `0` to `2`.
+Use the dimensions as diagnostic prompts. An optional `0` to `2` score can help with a detailed audit, but a numeric total must not override whether missing information actually prevents useful execution.
 
 - `0`: missing or unusable
 - `1`: partially specified
 - `2`: clear and actionable
 
-Total score guidance:
-
-- `0-4`: `blocked`
-- `5-8`: `repairable`
-- `9-12`: `ready`
+Classify as `ready` when the available context is sufficient, `repairable` when a material clarification would improve the result, and `blocked` only when unresolved intent or contradictions prevent safe execution.
 
 ## Dimensions
 
@@ -58,7 +54,7 @@ When the prompt is for implementation work, also verify:
 4. Reporting contract
 - States what the agent should return: changed files, checks run, blockers, risks, or follow-ups.
 
-If these are missing, do not mark a coding prompt `ready` unless the task is trivial.
+These details may come from the prompt, session, repo instructions, or project configuration. Their omission from the prompt alone does not prevent a `ready` verdict. Recommend discovery for routine technical details; ask a question only when a missing answer materially affects scope, correctness, or the user's intended result.
 
 ## High-Leverage Clarifying Questions
 
@@ -74,8 +70,7 @@ Ask only questions that materially change the result.
 
 Before marking a prompt `ready`, ensure:
 
-- Objective is explicit
-- Inputs/context are named
-- Constraints are listed
-- Output format is concrete
-- Quality bar is stated
+- The intended outcome is clear enough to act on.
+- Necessary inputs are available or have a practical discovery path.
+- Material constraints and the quality bar are known or safely inferable.
+- No unresolved choice would materially change the requested result.
