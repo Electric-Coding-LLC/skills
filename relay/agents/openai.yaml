@@ -1,4 +1,0 @@
-interface:
-  display_name: "Relay"
-  short_description: "Carry task state and authorization forward"
-  default_prompt: "Use $relay to produce a compact handoff that preserves the current scope, workflow, verification, authorization, and next action."

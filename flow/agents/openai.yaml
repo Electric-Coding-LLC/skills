@@ -1,4 +1,0 @@
-interface:
-  display_name: "Flow"
-  short_description: "Ship one scoped change through GitHub merge"
-  default_prompt: "Use $flow to complete this scoped change through implementation, review, and GitHub merge, preserving my finish line and existing planning artifacts."

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Review"
-  short_description: "Repo-aware pre-Sendit review with slop cleanup."
-  default_prompt: "Use $review to resolve the intended change and its base, inspect the complete diff, and assess slop, correctness, security, style, and repo-native verification before $sendit."

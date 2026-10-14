@@ -1,4 +1,0 @@
-interface:
-  display_name: "Superflow"
-  short_description: "Complete one planned unit through GitHub merge"
-  default_prompt: "Use $superflow to complete the active delivery unit through planning, supervised implementation, review, and GitHub merge, leaving separate publication outside scope unless requested."

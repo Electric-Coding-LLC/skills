@@ -1,4 +1,0 @@
-interface:
-  display_name: "Megaflow"
-  short_description: "Deliver roadmap versions sequentially"
-  default_prompt: "Use $megaflow to deliver the authorized roadmap one version at a time, reconciling implementation status before each delivery commit and reassessing after each merge."
