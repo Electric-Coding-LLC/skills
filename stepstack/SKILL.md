@@ -1,6 +1,6 @@
 ---
 name: stepstack
-description: Turn a task into an ordered list of terse steps, each five words or fewer, complete enough to execute from. Use when Chris says /stepstack or "stepstack", or asks for "just the steps", a "step list", or "quick steps" for a task or a process.
+description: Turn a task into an ordered list of terse steps, each five words or fewer, complete enough to execute from. Use when Chris says /stepstack, $stepstack, or "stepstack", or asks for "just the steps", a "step list", or "quick steps" for a task or a process.
 ---
 
 # Stepstack

@@ -22,7 +22,7 @@ Run the contract's gate. It must pass before the review.
 
 ## 3. Review, sized to the change
 
-The reviewer is a separate agent (a subagent) with a fresh context: it reviews the diff hunting for failure cases users would hit in the contract's review focus (not confirming the happy path), verifies each finding, and reports severity, file:line, scenario and class.
+The reviewer is a separate agent (a subagent) with a fresh context, or, if the app can't start one, a separate pass that rereads the diff cold: it reviews the diff hunting for failure cases users would hit in the contract's review focus (not confirming the happy path), verifies each finding, and reports severity, file:line, scenario and class.
 
 **Light review** when the change is small (a few files, roughly under 150 changed lines) and touches none of the contract's sensitive areas: one reviewer agent, told to keep it brief.
 
@@ -38,7 +38,7 @@ For every real finding: fix it as a class (the same pattern elsewhere, the same 
 
 - If the repo uses Changesets and the change touches a published package, add its changeset (`changeset` via the repo's script): the packages and a patch, minor or major bump, with a one-line user-facing summary.
 - Commit with a descriptive message (what and why; bullets for several parts) and the session's attribution trailer. Push with `-u`.
-- PR description in a scratchpad file, passed with `--body-file`: **Summary**, **Review** (what ran, what it caught, what was deliberately left alone), **Test plan**, **Follow-ups**, then the attribution line. Not a draft.
+- PR description in a temporary file, passed with `--body-file`: **Summary**, **Review** (what ran, what it caught, what was deliberately left alone), **Test plan**, **Follow-ups**, then the attribution line. Not a draft.
 - If the app can watch the PR, bind it and turn on Auto-fix. Enable squash auto-merge. If GitHub says the PR is already clean, merge it directly with `gh pr merge <n> --squash`.
 - If the app watches the PR and wakes the session, do not poll CI; otherwise wait with `gh pr checks <n> --watch`. Handle what comes back:
   - **CI failure:** read the log and any failure artifact or trace; fix the real cause; re-run the gate; push. Never retry blindly or weaken a test.
