@@ -1,1 +1,0 @@
-Follow the maintained [Sendit for Claude instructions](../../sendit/agents/claude.md), resolving this path relative to this command file. Preserve the user's requested finish line and existing authorization.

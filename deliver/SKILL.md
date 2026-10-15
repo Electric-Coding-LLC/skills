@@ -1,85 +1,75 @@
 ---
 name: deliver
-description: Review a ready code change, resolve actionable findings, open and merge its GitHub pull request, deploy it through the repository's real release path, and verify the live result. Use when the user asks to deliver, ship, release, deploy, or take a completed change through review, merge, publication, and production proof in one flow.
+description: "Take a finished change to its users: review it, fix what the review finds, merge it, take it live per the repo's contract, and verify it live. Use when Chris signals that finished work should ship, in any words."
 ---
 
 # Deliver
 
-## Goal
+When Chris signals that finished work should ship, the implementation is complete and nothing else belongs in it. That signal is authorization for everything below: commits, the review and its fixes, push, PR, squash auto-merge, CI and review-thread fixes, the repo's go-live steps, live verification, and branch cleanup. **Delivered means verified live**, not merged.
 
-Take an implementation that is ready for a delivery gate from local changes to verified production. Treat `$deliver` as authorization for review, necessary fixes, GitHub merge, deployment, and live verification.
+Stop and ask only for a product decision, a change of scope, a go-live step the contract says to ask about, or something irreversible the plan did not name (a package version, a data migration). Never force-push, change repository settings, or merge past a failing check or an unresolved thread.
 
-Do not use this skill to plan or implement a new feature. Use `$superflow` for a larger roadmap delivery unit.
+## 1. Read the contract
 
-## Delivery contract discovery
+- Read the `## Delivery` section of the repo's `AGENTS.md`, and the sections it points to (Code Review Rules, Releasing).
+- **No contract:** draft one from repo evidence (package scripts, CI and deploy workflows, docs), using the template at the end of this file. Show it to Chris and wait for approval before going on; commit it with the change.
+- `git status -sb`. Know exactly what is being delivered. Leave unrelated changes alone and say so.
+- If on the default branch, create a branch named for the change (`drop-retired-tables`), with no prefix unless the situation warrants one. Never commit to the default branch.
 
-Before changing or publishing anything, determine the repository's actual delivery contract. Inspect, in order:
+## 2. Gate
 
-1. `AGENTS.md`, release/deployment docs, active plan or `EXECMAP.md`.
-2. Repository scripts, CI workflows, hosting configuration, and recent merged-release history.
-3. Existing project-specific skills or known runbooks.
+Run the contract's gate. It must pass before the review.
 
-Record the chosen contract briefly: merge trigger, deployment command or workflow, target environment, required checks, health/version/live proof, local dev-server cleanup command when present, and rollback or stop condition.
+## 3. Review, sized to the change
 
-Use the discovered contract; do not assume every repository deploys on merge.
+The reviewer is a separate agent (a subagent) with a fresh context, or, if the app can't start one, a separate pass that rereads the diff cold: it reviews the diff hunting for failure cases users would hit in the contract's review focus (not confirming the happy path), verifies each finding, and reports severity, file:line, scenario and class.
 
-If the contract is not documented, infer it only from strong repository evidence. If production target, publish mechanism, or verification boundary remains materially ambiguous, stop before publish and ask one concise question. After it is answered, add a short repo-local delivery note only when the project has a natural existing place for it.
+**Light review** when the change is small (a few files, roughly under 150 changed lines) and touches none of the contract's sensitive areas: one reviewer agent, told to keep it brief.
 
-## Workflow
+**Full review** otherwise, one round:
+1. One reviewer agent over the whole diff, briefed on what changed and where the risks are.
+2. Fix the real findings. Re-review a fix (a reviewer agent on the fix commit) only when it touches security, sessions or data; otherwise the tests that prove the fix are enough. Anything found after that round, or any edge case not worth a fix, goes in the PR's known limitations, not another round. The review loop is where time goes; one thorough round catches what matters.
 
-1. Establish scope and readiness.
-- Inspect working tree, intended diff, branch, and current project state.
-- Preserve unrelated user changes. Do not stage or alter them.
-- Confirm the implementation is complete enough for a release gate; otherwise state the missing work.
+Prefer the simplest design that is correct; when a fix starts growing machinery (resolvers, observers, state tracking) to cover edge cases, step back to a simpler rule (a full reload, an explicit flag, refusing the case) and decide that yourself; it is engineering judgment, not a product decision. When a round finds only edge cases, stop: list them in the PR instead of running more rounds. Don't turn review edge cases into new follow-up tasks unless they affect real users.
 
-2. Run `$review`.
-- Run the complete review gate on the integrated diff, including repo-native checks.
-- Resolve blocking findings and any clearly worthwhile non-blocking findings within the request's scope.
-- Re-run focused checks and `$review` until the verdict is ready, or stop with a concrete blocker.
-- Do not weaken checks or silently accept unresolved production risk.
+For every real finding: fix it as a class (the same pattern elsewhere, the same rule in other shapes) with one table-driven test; for a bug, confirm the test fails with the fix reverted. For a finding that is not real, note why. A finding outside this change becomes a follow-up task with a self-contained prompt (the app's task tool if it has one, otherwise listed in the report), never part of this delivery.
 
-3. Run `$sendit`.
-- Use `$sendit` to stage only intended changes, commit, push, open the pull request, wait for required checks, merge safely, and clean up.
-- Treat confirmed merge, not an open PR or enabled auto-merge, as the GitHub completion boundary.
+## 4. Merge
 
-4. Deploy using the selected contract.
-- For merge-triggered CI/CD: identify the workflow caused by the merged revision, wait for its terminal success, and confirm the deployed revision when the platform exposes it.
-- For OpenAI Sites: publish the exact merged revision using the Sites hosting workflow; wait for successful publication and inspect the authenticated production application.
-- For another explicit provider or release script: use its documented production command and wait for the real terminal deployment state.
-- Never publish a different revision than the merged one unless the repository's release process explicitly requires it and the discrepancy is explained.
+- If the repo uses Changesets and the change touches a published package, add its changeset (`changeset` via the repo's script): the packages and a patch, minor or major bump, with a one-line user-facing summary.
+- Commit with a descriptive message (what and why; bullets for several parts) and the session's attribution trailer. Push with `-u`.
+- PR description in a temporary file, passed with `--body-file`: **Summary**, **Review** (what ran, what it caught, what was deliberately left alone), **Test plan**, **Follow-ups**, then the attribution line. Not a draft.
+- If the app can watch the PR, bind it and turn on Auto-fix. Enable squash auto-merge. If GitHub says the PR is already clean, merge it directly with `gh pr merge <n> --squash`.
+- If the app watches the PR and wakes the session, do not poll CI; otherwise wait with `gh pr checks <n> --watch`. Handle what comes back:
+  - **CI failure:** read the log and any failure artifact or trace; fix the real cause; re-run the gate; push. Never retry blindly or weaken a test.
+  - **Conflict:** merge the default branch in (never rebase or force-push), resolve, verify, push.
+  - **Review comment:** verify it; fix real ones as a class; reply with what changed or why not; resolve the thread.
+- Layered work: start each layer's branch from the default branch after the previous layer merges. A branch stacked on an unmerged one conflicts once the first is squash-merged.
 
-5. Verify production.
-- Run the repository's strongest cheap live proof: health endpoint, version/revision endpoint, targeted smoke path, asset/PWA verification, or authenticated production check as appropriate.
-- Verify the user-visible behavior affected by the change when feasible; deployment success alone is not proof.
-- If live verification fails, report the exact boundary that failed and do not claim delivery completion.
+## 5. Go live and verify
 
-6. Release local runtime resources.
-- After production verification, stop dev servers, watchers, and related runtime processes started by the delivery task or confirmed to be running from the delivery worktree.
-- Prefer the repository's documented cleanup command or configured Codex Local Environment cleanup script when it performs this shutdown.
-- Identify ownership from the recorded process handle, process working directory, command, and listening port. Terminate gracefully first; use force only when the exact process is confirmed and does not exit after a brief wait.
-- Do not stop a server that predated the task or belongs to another checkout, worktree, project, or user session.
-- Verify that every affected port is no longer listening. If no owned runtime process exists, record `not applicable`.
-- If cleanup fails, preserve unrelated processes, report the exact process and port still active, and leave delivery marked incomplete until cleanup succeeds or the user explicitly accepts the remaining cleanup.
+- Where a release is a manual step (a tag, a publish command) rather than a release PR, first confirm every review comment on the pull requests going into it is fixed or answered.
+- Follow the contract's go-live steps and deploy policy. For "automatic" where the go-live workflow verifies the live result itself (and GitHub notifies Chris when it fails), the delivery is complete once auto-merge is on and review threads are resolved: report that the workflow verifies live and failures reach him. Never ask Chris to come back and say "check"; confirm the live result yourself the next time you work in that repo. Where nothing verifies automatically, check once when woken. Do not publish a duplicate. For "ask first", stop and report "merged, not delivered", naming what is waiting.
+- Verify live using the contract's check: the live version or release endpoint shows the merge commit, the registry shows the new version, or the page shows the change. A successful workflow alone is not proof.
+- Clean up: `git switch <default> && git pull --ff-only`; confirm `git diff --quiet <branch> <default>` and `git branch -D <branch>`; delete the remote branch if GitHub did not; `git fetch --prune`. Stop any dev server this work started.
 
-## Guardrails
+## Report
 
-- Stop before external publication when deployment authority, target, or release contract is unclear.
-- Do not treat a successful build, merged PR, queued job, or enabled auto-merge as production delivery.
-- Do not invent generic deploy commands when project evidence is absent.
-- Do not remove the current worktree directly or kill processes based only on a port number.
-- Keep production credentials and secret values out of output.
-- Do not run rollback, destructive cleanup, migrations with irreversible effects, or a release to a broader environment without explicit repository guidance or user approval.
-- When deployment is intentionally automatic after merge, wait for and verify that path instead of publishing a duplicate release.
+Short: delivered (verified live, with the evidence) or exactly where it stopped. Then the PR and merge commit, what the review caught, and any follow-ups opened.
 
-## Completion contract
+Chris is often away while a delivery runs, so end it (and any stop that needs his decision) with a push notification (if the app can send one) leading with the outcome, e.g. "portal 0.3.0: PR #42 auto-merging, Deploy verifies live" or "deliver stopped: review found a sign-in bug, need your call". Never leave him to poll the session.
 
-Report, concisely:
+## Contract template
 
-1. Review result and fixes made.
-2. GitHub delivery result: merged or blocked.
-3. Deployment path used and terminal state.
-4. Production verification performed and outcome.
-5. Local runtime cleanup performed and ports released, or `not applicable`.
-6. Remaining risk or required manual follow-up, if any.
+```markdown
+## Delivery
 
-Call the work delivered only when review is clean, the intended change is merged, the correct production path has succeeded, a live verification boundary has passed, and runtime processes owned by the delivery task or worktree have been stopped or none exist.
+- **Gate:** `<commands that must pass before review and in CI>`
+- **While iterating:** `<quick checks for a single package or area>`
+- **Review focus:** <the rules a reviewer should hunt against, or a pointer to them>
+- **Sensitive areas** (always a full review): <paths or concerns: auth, sessions, data, public API, release tooling>
+- **Merge:** squash PR into `<default branch>`; required checks: `<names>`
+- **Go live:** <what happens after the merge and what triggers it>
+- **Verify live:** <how to prove the change reached users>
+- **Deploy policy:** automatic | ask first
+```

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Sendit"
-  short_description: "Prepare a PR, merge, and clean up"
-  default_prompt: "Use $sendit to reconcile existing planning status, stage only intended work, commit, push, open or update the PR, wait for gates, merge, and clean up within the requested finish line."

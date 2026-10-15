@@ -1,6 +1,0 @@
-interface:
-  display_name: "Surgery"
-  short_description: "Explicit shorthand for a focused repair"
-  default_prompt: "Use $surgery to apply the $debug repair workflow within the requested boundary while preserving surrounding behavior and design."
-policy:
-  allow_implicit_invocation: false

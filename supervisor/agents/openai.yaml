@@ -1,4 +1,0 @@
-interface:
-  display_name: "Supervisor"
-  short_description: "Lead scoped delegation and integration"
-  default_prompt: "Use $supervisor to lead this goal with bounded delegation, integrated verification, and existing planning artifacts while preserving my scope and delivery authorization."
