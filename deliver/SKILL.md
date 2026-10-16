@@ -14,7 +14,7 @@ Stop and ask only for a product decision, a change of scope, a go-live step the 
 - Read the `## Delivery` section of the repo's `AGENTS.md`, and the sections it points to (Code Review Rules, Releasing).
 - **No contract:** draft one from repo evidence (package scripts, CI and deploy workflows, docs), using the template at the end of this file. Show it to Chris and wait for approval before going on; commit it with the change.
 - `git status -sb`. Know exactly what is being delivered. Leave unrelated changes alone and say so.
-- If the contract allows direct commits for this kind of change, commit to the default branch, run the gate and go-live steps, and skip the PR steps below. Otherwise, if on the default branch, create a branch named for the change (`drop-retired-tables`), with no prefix unless the situation warrants one.
+- If the contract, or the global rule for solo repos, allows direct commits for this kind of change, commit to the default branch, run the gate and go-live steps, and skip the PR steps below. Otherwise, if on the default branch, create a branch named for the change (`drop-retired-tables`), with no prefix unless the situation warrants one.
 
 ## 2. Gate
 
