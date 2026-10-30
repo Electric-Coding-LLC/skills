@@ -36,6 +36,7 @@ For every real finding: fix it as a class (the same pattern elsewhere, the same 
 
 ## 4. Merge
 
+- If Chris corrected a UI or design choice during this work, check that the lesson is written down: in the project's `DESIGN.md`, committed with the work, or in `~/.agents/design.md` if it applies everywhere. If neither file exists, list the lesson in the report instead. Say in one line what you added.
 - If the repo uses Changesets and the change touches a published package, add its changeset (`changeset` via the repo's script): the packages and a patch, minor or major bump, with a one-line user-facing summary.
 - Commit with a descriptive message (what and why; bullets for several parts) and the session's attribution trailer. Push with `-u`.
 - PR description in a temporary file, passed with `--body-file`: **Summary**, **Review** (what ran, what it caught, what was deliberately left alone), **Test plan**, **Follow-ups**, then the attribution line. Not a draft.
